@@ -5,13 +5,13 @@ Use this in conjunction with the DaemonCommand management command base class.
 """
 from __future__ import print_function
 
-
 import logging, os, signal, sys, time, errno
 
 __all__ = ['start', 'stop', 'restart', 'status', 'execute']
 
+
 class Initd(object):
-    def __init__(self, log_file='', pid_file='', workdir='', umask='', 
+    def __init__(self, log_file='', pid_file='', workdir='', umask='',
                  stdout='', stderr='', **kwargs):
         self.log_file = log_file
         self.pid_file = pid_file
@@ -51,6 +51,7 @@ class Initd(object):
 
         # workaround for closure issue is putting running flag in array
         running = [True]
+
         def cb_term_handler(sig, frame):
             """
             Invoked when the daemon is stopping.  Tries to stop gracefully
@@ -64,6 +65,7 @@ class Initd(object):
                 logging.debug('Calling exit handler')
                 exit()
             running[0] = False
+
             def cb_alrm_handler(sig, frame):
                 """
                 Invoked when the daemon could not stop gracefully.  Forces
@@ -75,6 +77,7 @@ class Initd(object):
                 """
                 logging.warn('Could not exit gracefully.  Forcefully exiting.')
                 sys.exit(1)
+
             signal.signal(signal.SIGALRM, cb_alrm_handler)
             signal.alarm(5)
 
@@ -87,12 +90,11 @@ class Initd(object):
                     run()
                 # disabling warning for catching Exception, since it is the
                 # top level loop
-                except Exception as exc: # pylint: disable-msg=W0703
+                except Exception as exc:  # pylint: disable-msg=W0703
                     logging.exception(exc)
         finally:
             os.remove(self.pid_file)
             logging.info('Exiting.')
-
 
     def stop(self, run=None, exit=None):
         """
@@ -117,7 +119,6 @@ class Initd(object):
             time.sleep(0.5)
         sys.stdout.write('\n')
 
-
     def restart(self, run, exit=None):
         """
         Restarts the daemon.  This simply calls stop (if the process is running)
@@ -131,7 +132,6 @@ class Initd(object):
         print('Starting.')
         self.start(run, exit=exit)
 
-
     def status(self, run=None, exit=None):
         """
         Prints the daemon's status:
@@ -142,7 +142,6 @@ class Initd(object):
         else:
             sys.stdout.write('Stopped.\n')
         sys.stdout.flush()
-
 
     def execute(self, action, run=None, exit=None):
         cmd = getattr(self, action)
