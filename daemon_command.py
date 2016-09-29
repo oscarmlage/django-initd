@@ -19,7 +19,7 @@ class DaemonCommand(BaseCommand):
     """
     requires_model_validation = True
     WORKDIR = '.'
-    UMASK = 0
+    UMASK = 0o022
     PID_FILE = 'daemon_command.pid'
     LOGFILE = 'daemon_command.log'
     STDOUT = '/dev/null'
