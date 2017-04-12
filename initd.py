@@ -18,7 +18,7 @@ __all__ = ['start', 'stop', 'restart', 'status', 'execute']
 """
 Django compatibility as become daemon is no more in Django framework
 """
-if django.VERSION <= 1.8:
+if django.VERSION < (1, 9):
     from django.utils.daemonize import become_daemon
 else:
     if os.name == 'posix':
@@ -45,8 +45,8 @@ else:
                 os._exit(1)
 
             si = open('/dev/null', 'r')
-            so = open(out_log, 'a+', 0)
-            se = open(err_log, 'a+', 0)
+            so = open(out_log, 'ab+', 0)
+            se = open(err_log, 'ab+', 0)
             os.dup2(si.fileno(), sys.stdin.fileno())
             os.dup2(so.fileno(), sys.stdout.fileno())
             os.dup2(se.fileno(), sys.stderr.fileno())
@@ -64,11 +64,11 @@ else:
             sys.stdout.close()
             sys.stderr.close()
             if err_log:
-                sys.stderr = open(err_log, 'a', 0)
+                sys.stderr = open(err_log, 'ab', 0)
             else:
                 sys.stderr = NullDevice()
             if out_log:
-                sys.stdout = open(out_log, 'a', 0)
+                sys.stdout = open(out_log, 'ab', 0)
             else:
                 sys.stdout = NullDevice()
 
